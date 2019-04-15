@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Director.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CallCenter</a> &gt; <a href="index.source.html" class="el_package">com.callcenter.empleado</a> &gt; <span class="el_source">Director.java</span></div><h1>Director.java</h1><pre class="source lang-java linenums">package com.callcenter.empleado;
+
+/**
+ * La clase &lt;code&gt;Director&lt;/code&gt; representa el cargo en jerarquia más alta del CallCenter con las siguientes caracteristicas:
+ * &lt;ul&gt;
+ * &lt;li&gt;Esta clase extiende de la clase general Empleado, heredando todos sus atributos y métodos
+ * &lt;li&gt;Tiene asociado un nombre
+ * &lt;li&gt;Tiene prioridad 3 de atención de una llamada telefónica
+ * &lt;li&gt;Posee una marcación que indica si está disponible al momento de recibir una llamada 
+ * &lt;li&gt;
+ * &lt;/ul&gt; 
+ * 
+ * @author Juan Carlos Eduardo
+ * @version 1.0
+ * @since 1.8
+ */
+public class Director extends Empleado {
+
+    /**
+     * Constructor que instancia un director
+     * 
+     * @param nombre Nombre asociado al director
+     */
+    public Director(String nombre) {
+<span class="fc" id="L25">        super(nombre);</span>
+<span class="fc" id="L26">        setPrioridad(PRIORIDAD.TRES);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Constructor que instancia un director 
+     * 
+     * @param nombre Nombre asociado al director
+     * @param estaLibre Marcación que indica la disponibilidad para atender una llamada telefónica
+     */
+    public Director(String nombre, Boolean estaLibre) {
+<span class="fc" id="L36">        super(nombre, estaLibre);</span>
+<span class="fc" id="L37">        setPrioridad(PRIORIDAD.TRES);</span>
+<span class="fc" id="L38">    }</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L42">        return &quot;Operador [getNombre()=&quot; + getNombre() + &quot;, toString()=&quot; + super.toString() + &quot;, getClass()=&quot;</span>
+<span class="fc" id="L43">                + getClass() + &quot;, hashCode()=&quot; + hashCode() + &quot;]&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

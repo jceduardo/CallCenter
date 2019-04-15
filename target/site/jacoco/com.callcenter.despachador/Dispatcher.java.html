@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dispatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CallCenter</a> &gt; <a href="index.source.html" class="el_package">com.callcenter.despachador</a> &gt; <span class="el_source">Dispatcher.java</span></div><h1>Dispatcher.java</h1><pre class="source lang-java linenums">package com.callcenter.despachador;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.callcenter.empleado.Director;
+import com.callcenter.empleado.Empleado;
+import com.callcenter.empleado.Operador;
+import com.callcenter.empleado.Supervisor;
+import com.callcenter.telefonia.ESTADO_LLAMADA;
+import com.callcenter.telefonia.Llamada;
+
+/**
+ * Clase &lt;code&gt;Dispatcher&lt;/code&gt; que actúa como despachador de llamadas telefónicas a los 
+ * empleados que están disponibles. Si todos los empleados están atendiendo una llamada, se
+ * maneja una cola de llamadas en espera y se van procesando a medida que los empleados van
+ * quedando disponibles al terminar una llamada. Si hay menos de 10 empleados se procesan las 
+ * llamadas por demanda.
+ * 
+ * @author Juan Carlos Eduardo
+ * @version 1.0
+ * @since 1.8
+ *
+ */
+public class Dispatcher {
+
+    /**
+     * Capacidad máxima de llamadas concurrentes que se puedan atender
+     */
+<span class="fc" id="L32">    public static final Integer CAPACIDAD_MAXIMA_CONCURRENTE = 10;</span>
+    
+    /**
+     * Permite contar las llamadas en espera para luego procesarlas en una cola de espera
+     */
+<span class="fc" id="L37">    private int contarLlamadasEnEspera = 0;</span>
+    
+    /**
+     * Permite contar las llamadas procesadas desde la cola de espera
+     */
+<span class="fc" id="L42">    private int procesarLlamadasEnEspera = 1;</span>
+    
+    /**
+     * Número de llamadas totales que el despachador va recibiendo
+     */
+<span class="fc" id="L47">    private int numeroLlamadas = 0;</span>
+    
+    /**
+     * Colección asociada a una lista de empleados
+     */
+    private Set&lt;Empleado&gt; listaEmpleados;
+    
+    /**
+     * Colección asociada a una lista de de llamadas atendidas
+     */
+    private Set&lt;Llamada&gt; llamadasAtendidas;
+    
+    /**
+     * Colección asociada a una lista de llamadas en espera o una cola de llamadas
+     */
+    private Set&lt;Llamada&gt; llamadasEspera;
+
+    /**
+     * Constructor por defecto de un despachador
+     */
+<span class="fc" id="L67">    public Dispatcher() {</span>
+        /* Se inicializan las colecciones */
+<span class="fc" id="L69">        listaEmpleados = new HashSet&lt;&gt;(0);</span>
+<span class="fc" id="L70">        llamadasAtendidas = new HashSet&lt;&gt;(0);</span>
+<span class="fc" id="L71">        llamadasEspera = new HashSet&lt;&gt;(0);</span>
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Método que asigna un empleado al despachador para luego asignarle llamadas telefónicas 
+     * 
+     * @param empleado Objeto asociado a un empleado que puede ser un Operador, un Supervisor o un Director
+     */
+    public void setEmpleado(Empleado empleado) {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (empleado == null) {</span>
+<span class="fc" id="L81">            System.out.println(&quot;Error: Empleado no válido&quot;);</span>
+<span class="fc" id="L82">            throw new RuntimeException(&quot;Error: Empleado no válido&quot;);</span>
+        }
+<span class="fc" id="L84">        listaEmpleados.add(empleado);</span>
+<span class="fc" id="L85">    }</span>
+    
+    /**
+     * Método que obtiene un empleado dado una posición dada de la lista de empleados del despachador 
+     * 
+     * @param indice Posición del empleado en la lista de empleados
+     */
+    public Set&lt;Empleado&gt; getListaEmpleados() {
+<span class="fc" id="L93">        return listaEmpleados;</span>
+    }
+
+    /**
+     * Método para asignar una lista de empleados
+     * 
+     * @param listaEmpleados Lista de empleados
+     */
+    public void setListaEmpleados(Set&lt;Empleado&gt; listaEmpleados) {
+<span class="fc" id="L102">        this.listaEmpleados = listaEmpleados;</span>
+<span class="fc" id="L103">    }</span>
+
+    /**
+     * Método que obtiene una lista de llamadas atendidas por los empleados
+     * 
+     * @return Devuelve una colección de llamadas atendidas
+     */
+    public Set&lt;Llamada&gt; getLlamadasAtendidas() {
+<span class="fc" id="L111">        return llamadasAtendidas;</span>
+    }
+
+    /**
+     * Método que asigna una llamada a una cola de espera en caso que no haya disponibilidad de atender la llamada
+     * 
+     * @param llamada
+     */
+    public void setLLamadaEspera(Llamada llamada) {   
+<span class="fc" id="L120">        llamadasEspera.add(llamada);</span>
+<span class="fc" id="L121">    }</span>
+    
+    public void dispatchCall(Llamada llamada) { 
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (llamada == null) {</span>
+<span class="fc" id="L125">            System.out.println(&quot;\nError: Llamada no válida y no procesada por el despachador.&quot;);</span>
+<span class="fc" id="L126">            throw new RuntimeException(&quot;Error: Llamada no válida y no procesada por el despachador.&quot;);</span>
+        }
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (listaEmpleados.isEmpty()) {</span>
+<span class="fc" id="L129">            System.out.println(&quot;Error: Lista de empleados vacía&quot;);</span>
+<span class="fc" id="L130">            throw new RuntimeException(&quot;Error: Lista de empleados vacía&quot;);</span>
+            
+        }        
+<span class="fc" id="L133">        numeroLlamadas++;</span>
+<span class="fc" id="L134">        Optional&lt;Empleado&gt; empleado = asignarLlamadaEmpleadoDisponible();</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        if (!empleado.isPresent()) {</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            if (contarLlamadasEnEspera &lt; numeroLlamadas - Dispatcher.CAPACIDAD_MAXIMA_CONCURRENTE) {</span>
+<span class="fc" id="L137">                System.out.println(&quot;--&gt; CallCenter full...&quot;);</span>
+<span class="fc" id="L138">                setLLamadaEspera(llamada);</span>
+<span class="fc" id="L139">                System.out.println(&quot;--&gt; Llamada &quot; + contarLlamadasEnEspera + &quot; en Espera&quot;);</span>
+                /* Determina que hay un procesamiento de llamadas en espera */
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                if (contarLlamadasEnEspera == 0) {</span>
+<span class="fc" id="L142">                    procesarColaLlamadas();</span>
+                }
+<span class="fc" id="L144">                contarLlamadasEnEspera++;</span>
+            }
+        } else {
+<span class="fc" id="L147">            Empleado empleadoDisponible =  empleado.get();</span>
+<span class="fc" id="L148">            System.out.println(&quot;\n&quot; + empleadoDisponible.getNombre() + &quot; - Atendiendo llamada...&quot;);</span>
+<span class="fc" id="L149">            llamada.atenderLlamada(empleadoDisponible.getNombre());           </span>
+<span class="fc" id="L150">            llamada.setEstadoLlamada(ESTADO_LLAMADA.TERMINADA);</span>
+<span class="fc" id="L151">            llamadasAtendidas.add(llamada);</span>
+        }        
+<span class="fc" id="L153">    }</span>
+
+    /**
+     * Procesar colas de llamadas por demanda
+     */
+    public void procesarColaLlamadas() {
+        /* Crear un hilo para que procese la cola de llamadas por demanda (a penas esté alguno de los empleados disponibles) */
+<span class="fc" id="L160">        Runnable revisarLlamadasEnEspera = () -&gt; {</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">            while (Boolean.TRUE) {</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">                Optional&lt;Llamada&gt; terminoAlgunaLlamada = llamadasAtendidas.stream().filter(f -&gt; f.getEstadoLlamada() == ESTADO_LLAMADA.TERMINADA).findFirst();</span>
+<span class="pc bpc" id="L163" title="2 of 4 branches missed.">                if ((contarLlamadasEnEspera &gt; 0) &amp;&amp; terminoAlgunaLlamada.isPresent()) {</span>
+<span class="fc" id="L164">                    System.out.println(&quot;Atendiendo &quot; + procesarLlamadasEnEspera + &quot; Llamada en Espera...&quot;);</span>
+<span class="fc" id="L165">                    Llamada llamadaTerminada = terminoAlgunaLlamada.get();</span>
+<span class="fc" id="L166">                    System.out.println(&quot;Llamada Terminada -&gt; &quot; + llamadaTerminada);</span>
+<span class="fc" id="L167">                    listaEmpleados = listaEmpleados.stream()</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">                            .map(e -&gt; (e.getNombre().compareTo(llamadaTerminada.getPersonaAtiendioLlamada()) == 0)</span>
+<span class="fc" id="L169">                                    ? obtenerEmpleado(e, Boolean.TRUE).get()</span>
+                                            : e)
+<span class="fc" id="L171">                            .collect(Collectors.toSet()); </span>
+<span class="fc" id="L172">                    llamadaTerminada.atenderLlamada(llamadaTerminada.getPersonaAtiendioLlamada());         </span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">                    if (procesarLlamadasEnEspera &lt; contarLlamadasEnEspera) {</span>
+<span class="fc" id="L174">                        procesarLlamadasEnEspera++;</span>
+                    } else {
+                        break;
+                    }
+                }
+<span class="fc" id="L179">            }</span>
+<span class="fc" id="L180">        };</span>
+<span class="fc" id="L181">        Thread t = new Thread(revisarLlamadasEnEspera, &quot;ColaLlamadas&quot;);</span>
+<span class="fc" id="L182">        t.start();</span>
+<span class="fc" id="L183">    }</span>
+
+    /**
+     * Método sincronizado que permite al despachador asignar una llamada a un empleado disponible
+     * 
+     * @return Devuelve el empleado disponible para atender la llamada telefónica
+     */
+    public synchronized Optional&lt;Empleado&gt; asignarLlamadaEmpleadoDisponible() {        
+        Optional&lt;Empleado&gt; empleadoDisponible;
+<span class="fc" id="L192">        empleadoDisponible = listaEmpleados.stream()</span>
+<span class="fc" id="L193">                .filter(e -&gt; e.getEstaLibre())                                      /* Verifica los empleados que estén libres */</span>
+<span class="fc" id="L194">                .sorted((e1, e2) -&gt; e1.getPrioridad().compareTo(e2.getPrioridad())) /* Ordena por orden de prioridad */</span>
+<span class="fc" id="L195">                .findFirst();                                                       /* Devuelve el primero disponible */</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (empleadoDisponible.isPresent()) {</span>
+<span class="fc" id="L197">            Empleado empleado = empleadoDisponible.get();</span>
+            /* El empleado que atiende la llamada hay que cambiarle el estado a ocupado */
+<span class="fc" id="L199">            asignarEmpleadoOcupadoEnLlamada(empleado.getNombre());</span>
+        }        
+<span class="fc" id="L201">        return empleadoDisponible;</span>
+    }
+
+    /**
+     * Método que permite que el despachador asigne una llamada telefónica a un empleado disponible 
+     * 
+     * @param nombre Nombre del empleado disponible
+     */
+    private void asignarEmpleadoOcupadoEnLlamada(String nombre) {
+        /* Recorre la lista de empleados, verifica que si el nombre coincide y esta disponible entonces
+         * realiza la asignación a estado no disponible */
+<span class="fc" id="L212">        listaEmpleados = listaEmpleados.stream()</span>
+<span class="pc bpc" id="L213" title="1 of 4 branches missed.">                .map(e -&gt; (e.getNombre().compareTo(nombre) == 0) &amp;&amp; (e.getEstaLibre())  /* Busca el nombre y verifica su disponibilidad  */</span>
+<span class="fc" id="L214">                        ? obtenerEmpleado(e, Boolean.FALSE).get()                       /* Asigna al empleado que está ocupado */</span>
+                                : e)                                                    /* Devuelve la colección actualizada */
+<span class="fc" id="L216">                .collect(Collectors.toSet()); </span>
+<span class="fc" id="L217">    }</span>
+
+    /**
+     * Método que apartir de la clase padre &lt;code&gt;Empleado&lt;/code&gt; permite conocer si es de tipo Operador,
+     * Supervisor o Director
+     * 
+     * @param empleado Objeto asociada a un empleado en general (operador, supervisor o director)  
+     * @param estaLibre Indica si el empleado está disponible  o no
+     * @return Un objeto empleado con la subclase asociada
+     */
+    public Optional&lt;Empleado&gt; obtenerEmpleado(Empleado empleado, Boolean estaLibre) {
+<span class="fc" id="L228">        Optional&lt;Empleado&gt; empleadoSubClase = Optional.empty();</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        if (empleado instanceof Operador) {</span>
+            /* Crea un empleado tipo Operador */
+<span class="fc" id="L231">            empleadoSubClase = Optional.of(new Operador(empleado.getNombre(), estaLibre)); </span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">        } else if (empleado instanceof Supervisor) {</span>
+            /* Crea un empleado tipo Supervisor */
+<span class="fc" id="L234">            empleadoSubClase = Optional.of(new Supervisor(empleado.getNombre(), estaLibre)); </span>
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">        } else if (empleado instanceof Director) {</span>
+            /* Crea un empleado tipo Director */
+<span class="fc" id="L237">            empleadoSubClase = Optional.of(new Director(empleado.getNombre(), estaLibre)); </span>
+        }
+<span class="fc" id="L239">        return empleadoSubClase;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

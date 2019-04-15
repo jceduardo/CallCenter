@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+CallCenter,com.callcenter.despachador,Dispatcher,1,377,7,29,0,82,7,29,0,18
+CallCenter,com.callcenter.telefonia,ESTADO_LLAMADA,0,24,0,0,0,3,0,1,0,1
+CallCenter,com.callcenter.telefonia,Llamada,12,109,0,0,2,22,0,7,0,7
+CallCenter,com.callcenter.empleado,Operador,0,42,0,0,0,8,0,3,0,3
+CallCenter,com.callcenter.empleado,Director,0,42,0,0,0,8,0,3,0,3
+CallCenter,com.callcenter.empleado,Supervisor,0,42,0,0,0,8,0,3,0,3
+CallCenter,com.callcenter.empleado,Empleado,0,53,0,0,0,14,0,7,0,7
+CallCenter,com.callcenter.empleado,PRIORIDAD,0,34,0,0,0,4,0,1,0,1

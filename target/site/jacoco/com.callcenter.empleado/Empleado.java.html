@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Empleado.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CallCenter</a> &gt; <a href="index.source.html" class="el_package">com.callcenter.empleado</a> &gt; <span class="el_source">Empleado.java</span></div><h1>Empleado.java</h1><pre class="source lang-java linenums">package com.callcenter.empleado;
+
+/**
+ * Clase abstracta para persistir la información de un empleado del CallCenter
+ * 
+ * @author Juan Carlos Eduardo
+ * @version 1.0
+ * @since 1.8
+ *
+ */
+public abstract class Empleado {
+
+    /**
+     * Nombre asociado al empleado
+     */
+    protected String nombre;
+    
+    /**
+     * Prioridad de atención de una llamada telefónica
+     */
+    protected PRIORIDAD prioridad;
+    
+    /**
+     * Marcación que indica se está disponible para atender una llamada telefónica
+     */
+    protected Boolean estaLibre;
+
+    /**
+     * Constructor que instancia un empleado
+     * 
+     * @param nombre Nombre asociado al empleado
+     */
+<span class="fc" id="L33">    public Empleado(String nombre) {</span>
+<span class="fc" id="L34">        this.nombre = nombre;</span>
+<span class="fc" id="L35">        this.estaLibre = Boolean.TRUE;</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Constructor que instancia un empleado 
+     * 
+     * @param nombre Nombre asociado al empleado
+     * @param estaLibre Marcación que indica la disponibilidad para atender una llamada telefónica
+     */
+<span class="fc" id="L44">    public Empleado(String nombre, Boolean estaLibre) {</span>
+<span class="fc" id="L45">        this.nombre = nombre;</span>
+<span class="fc" id="L46">        this.estaLibre = estaLibre;</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * Método que obtiene el nombre asociado a un empleado
+     * 
+     * @return Nombre del empeado
+     */
+    public String getNombre() {
+<span class="fc" id="L55">        return this.nombre;</span>
+    }
+
+    /**
+     * Método que obtiene la prioridad asignada al empleado
+     * 
+     * @return Prioridad del empleado
+     */
+    public PRIORIDAD getPrioridad() {
+<span class="fc" id="L64">        return prioridad;</span>
+    }
+
+    /**
+     * Método que asigna la prioridad al empleado 
+     * 
+     * @param prioridad Enumerado que indican la prioridad {@link #ESTADO_LLAMADA} 
+     */
+    public void setPrioridad(PRIORIDAD prioridad) {
+<span class="fc" id="L73">        this.prioridad = prioridad;</span>
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * Método que obtiene la disponibilidad del empleado
+     * 
+     * @return &lt;code&gt;true&lt;/code&gt; si está libre al momento de atender una llamada telefónica o &lt;code&gt;false&lt;/code&gt; en caso contrario
+     */
+    public Boolean getEstaLibre() {
+<span class="fc" id="L82">        return estaLibre;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L87">        return &quot;Empleado [nombre=&quot; + nombre + &quot;, prioridad=&quot; + prioridad + &quot;, estaLibre=&quot; + estaLibre + &quot;]&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

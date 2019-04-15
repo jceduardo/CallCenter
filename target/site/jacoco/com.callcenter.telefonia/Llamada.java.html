@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Llamada.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CallCenter</a> &gt; <a href="index.source.html" class="el_package">com.callcenter.telefonia</a> &gt; <span class="el_source">Llamada.java</span></div><h1>Llamada.java</h1><pre class="source lang-java linenums">package com.callcenter.telefonia;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Clase asociado a una llamada telefónica
+ * 
+ * @author Juan Carlos Eduardo
+ * @version 1.0
+ * @since 1.8
+ *
+ */
+public class Llamada {
+
+    /**
+     * Permite calcular la duración de una llamada telefónica mediante un número aleatorio entre 5 y 10 segundos 
+     */
+    private Random generarDuracionAleatoria;
+
+    /**
+     * Duración mínima de una llamada telefónica en segundos
+     */
+    private static final int MIN_DURACION = 5;
+    
+    /**
+     * Duración máxima de una llamada telefónica en segundos
+     */
+    private static final int MAX_DURACION = 10;
+    
+    /**
+     * Estado de una llamada telefónica que para este caso se maneja dos estados: Iniciada y Terminada
+     */
+    private ESTADO_LLAMADA estadoLlamada;
+    
+    /**
+     * Nombre asociado al empleado que atendió la llamada
+     */
+    private String personaAtiendioLlamada;
+
+    /**
+     * Constructor por defecto de una llamada telefónica
+     */
+<span class="fc" id="L44">    public Llamada() {</span>
+<span class="fc" id="L45">        generarDuracionAleatoria = new Random();</span>
+<span class="fc" id="L46">        generarDuracionAleatoria.setSeed(System.currentTimeMillis());</span>
+<span class="fc" id="L47">        personaAtiendioLlamada = &quot;NO_ASIGNADO&quot;;</span>
+        /* Se indica que el estado de la llamada es Iniciada */
+<span class="fc" id="L49">        this.estadoLlamada = ESTADO_LLAMADA.INICIADA;</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * Método que procesa la atención de una llamada entre 5 y 10 segundos
+     * 
+     * @param nombre Nombre del empleado que atiende la llamada
+     */
+    public void atenderLlamada(String nombre) {
+        /* Se asigna a la llamada el nombre del empleado */
+<span class="fc" id="L59">        this.personaAtiendioLlamada = nombre;</span>
+        /* Se ejecuta en un hilo el procesamiento de la llamada */
+<span class="fc" id="L61">        Runnable llamada = () -&gt; {</span>
+            try {
+<span class="fc" id="L63">                int nAleatorio = generarDuracionAleatoria.nextInt(Llamada.MAX_DURACION - Llamada.MIN_DURACION + 1) + Llamada.MIN_DURACION;</span>
+<span class="fc" id="L64">                System.out.println(&quot;Tiempo de llamada --&gt; &quot; + nAleatorio + &quot; seg(s) &quot;);                </span>
+                /* Cálculo de número aleatorio en segundos */
+<span class="fc" id="L66">                TimeUnit.SECONDS.sleep(nAleatorio);</span>
+<span class="fc" id="L67">                System.out.println(nombre + &quot; - Termino llamada. Empleado disponible. &quot;);</span>
+<span class="nc" id="L68">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L69">                System.out.println( &quot;\nError de interrupción de una excepción: &quot; + e.getMessage());</span>
+<span class="fc" id="L70">            }</span>
+<span class="fc" id="L71">        };</span>
+<span class="fc" id="L72">        Thread t = new Thread (llamada, nombre);</span>
+<span class="fc" id="L73">        t.start();</span>
+<span class="fc" id="L74">    }</span>
+    
+    /**
+     * Método que obtiene el estado de una llamada telefónica
+     * 
+     * @return Un enumerado con el estado de una llamada:
+     *         Iniciada - Que indica que la llamada está siendo atendida 
+     *         Terminada - Que indica que la llamada terminó 
+     */
+    public ESTADO_LLAMADA getEstadoLlamada() {
+<span class="fc" id="L84">        return estadoLlamada;</span>
+    }
+
+    /**
+     * Método que asigna el estado a una llamada
+     * 
+     * @param estadoLlamada Un enumerado con el estado de una llamada:
+     *                      Iniciada - Que indica que la llamada está siendo atendida 
+     *                      Terminada - Que indica que la llamada terminó 
+     */
+    public void setEstadoLlamada(ESTADO_LLAMADA estadoLlamada) {
+<span class="fc" id="L95">        this.estadoLlamada = estadoLlamada;</span>
+<span class="fc" id="L96">    }</span>
+
+    /**
+     * Método que obtiene el nombre del empleado que atiende la llamada
+     * 
+     * @return Nombre del empleado que atendió la llamada
+     */
+    public String getPersonaAtiendioLlamada() {
+<span class="fc" id="L104">        return personaAtiendioLlamada;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L109">        return &quot;Llamada [generarDuracionAleatoria=&quot; + generarDuracionAleatoria + &quot;, MIN_DURACION=&quot; + MIN_DURACION + &quot;, MAX_DURACION=&quot; + MAX_DURACION</span>
+                + &quot;, estadoLlamada=&quot; + estadoLlamada + &quot;, personaAtiendioLlamada=&quot; + personaAtiendioLlamada + &quot;]&quot;;
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>
